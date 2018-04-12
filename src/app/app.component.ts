@@ -8,6 +8,7 @@ interface Semaforo{
     response: string;
     pluma?:any;
     request?:any;
+    tag: string;
 }
 
 @Component({
@@ -17,60 +18,65 @@ interface Semaforo{
 })
 export class AppComponent {
 
-    tag: string = "";
     accesos: Semaforo[];
     socket: any;
+
+    timer: any;
 
     constructor(){
         this.accesos = [
             {
                 id:"1",
                 status:false,
-                response:''
+                response:'',
+                tag: "128-16"
             },
             {
                 id:"2",
                 status: false,
-                response:''
+                response:'',
+                tag: "Q1"
             }
         ]
-        this.socket = io.connect('http://192.168.1.65:8888');
+        this.socket = io.connect('http://192.168.1.119:8888');
         this.socket.on('resAccess', this.respuestaAcceso.bind(this));
     }
 
 
     abrir(acceso:Semaforo){
         const data = {
-            cluster:this.tag,
+            tag: acceso.tag,
             puerta: acceso.id
         }
-        this.socket.emit('getAccess', data);
+
+        this.timer = setInterval(()=> this.socket.emit('getAccess', data) , 100)
+
+    }
+
+    cancelAbrir(){
+        clearInterval(this.timer);
     }
 
 
     respuestaAcceso(res:any){
-        console.log(res);
-        let acceso
-        for (const puerta of this.accesos) {
-            if(puerta.id == res.puerta){
-                acceso = puerta
-            }
-        }
-        if(acceso){
-            clearTimeout(acceso.request);
+
+        const puerta = this.accesos.find(item => item.id == res.puerta)
+
+        if(puerta){
+            clearTimeout(puerta.request);
             if (res.acceso){
-                acceso.response = 'green';
-                acceso.status = true;
-                clearTimeout(acceso.pluma);
+                puerta.response = 'green';
+                puerta.status = true;
+                clearTimeout(puerta.pluma);
             }else{
-                acceso.response = 'red';
+                puerta.response = 'red';
             }
-            acceso.pluma = setTimeout(() => {
-                acceso.status = false;
+            puerta.pluma = setTimeout(() => {
+                puerta.status = false;
             }, 3000);
 
-            acceso.request = setTimeout(() => {
-                acceso.response = '';
+            puerta.request = setTimeout(() => {
+                puerta.response = '';
             }, 2000);
         }
 

@@ -13,9 +13,15 @@
         padding: 2rem 2rem 2rem 2rem;
         display: flex;
         flex-direction: column;
-        
+
         .semaforo{
             margin: 2rem 0;
+
+            mat-form-field {
+                margin: 1rem 0;
+                justify-content: center;
+                display: flex;
+            }
             .btn{
                 justify-content: center;
                 margin: 1rem 0;

@@ -7,15 +7,14 @@
 
     <div class="container">
 
-        <mat-form-field>
-            <input matInput placeholder="RFID" [(ngModel)]="tag">
-        </mat-form-field>
-
 
 
         <div class="semaforo" *ngFor="let acceso of accesos">
+            <mat-form-field>
+                <input matInput placeholder="RFID" [(ngModel)]="acceso.tag">
+            </mat-form-field>
             <div class="btn">
-                <button mat-button (click)="abrir(acceso)">Abrir Pluma-{{acceso.id}}</button>
+                <button mat-button (mousedown)="abrir(acceso)" (mouseout)="cancelAbrir()" (mouseup)="cancelAbrir()">Abrir Pluma-{{acceso.id}}</button>
             </div>
             <div class="res">
                 <div [style.color]="acceso.response">
